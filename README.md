@@ -17,10 +17,12 @@ mvn clean package
 
 You use CRLoader like the following:
 ```shell
-java -javaagent:<path to your CRLoader.jar>=<Desired location of Cosmic Reach's files> -jar <Cosmic Reach jar>
+java -Dcrloader.saveDirPath=<Desired location of Cosmic Reach files> -javaagent:<path to your CRLoader.jar> -jar <Cosmic Reach jar>
 ```
 
 Example:
 ```shell
-java -javaagent:CRLoader-0.0.1.jar=C:\Users\User\CRLauncher\cosmic-reach -jar "Cosmic Reach-0.1.6.jar"
+java -Dcrloader.saveDirPath=C:\Users\User\Documents\CosmicReach -javaagent:CRLoader-0.0.1.jar "Cosmic Reach-0.1.47.jar"
 ```
+
+You can also set initial window title with `crloader.windowTitle` system property.
