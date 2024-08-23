@@ -19,47 +19,53 @@
 package me.theentropyshard.crloader;
 
 import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
 import javassist.LoaderClassPath;
 import javassist.runtime.Desc;
+import me.theentropyshard.crloader.patch.Lwjgl3LauncherPatch;
+import me.theentropyshard.crloader.patch.Patch;
+import me.theentropyshard.crloader.patch.SaveLocationPatch;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyClassTransformer implements ClassFileTransformer {
-    private final String saveDirPath;
+    private final Map<String, Patch> patches;
 
-    public MyClassTransformer(String saveDirPath) {
+    public MyClassTransformer() {
+        this.patches = new HashMap<>();
+
+        this.addPatch(new SaveLocationPatch(System.getProperty("crloader.saveDirPath")));
+        this.addPatch(new Lwjgl3LauncherPatch(System.getProperty("crloader.windowTitle")));
+
         Desc.useContextClassLoader = true;
-        this.saveDirPath = saveDirPath;
+    }
+
+    private void addPatch(Patch patch) {
+        this.patches.put(patch.getTarget(), patch);
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-                            ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-
-        byte[] byteCode = classfileBuffer;
-
-        if (!className.equals("finalforeach/cosmicreach/io/SaveLocation")) {
-            return byteCode;
-        }
-
+    public byte[] transform(ClassLoader classLoader, String className, Class<?> classBeingRedefined,
+                            ProtectionDomain protectionDomain, byte[] bytecode) {
         try {
             ClassPool classPool = ClassPool.getDefault();
-            classPool.appendClassPath(new LoaderClassPath(loader));
+            classPool.appendClassPath(new LoaderClassPath(classLoader));
 
-            CtClass ctClass = classPool.get("finalforeach.cosmicreach.io.SaveLocation");
-            CtMethod method = ctClass.getDeclaredMethod("getSaveFolderLocation");
-            method.setBody("{ return \"" + this.saveDirPath + "\"; }");
+            if (this.patches.containsKey(className)) {
+                byte[] bytes = this.patches.get(className).perform(classPool);
 
-            byteCode = ctClass.toBytecode();
-
-            ctClass.detach();
+                if (bytes == null) {
+                    return bytecode;
+                } else {
+                    return bytes;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return byteCode;
+        return bytecode;
     }
 }

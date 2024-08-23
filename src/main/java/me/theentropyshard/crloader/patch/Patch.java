@@ -16,14 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.theentropyshard.crloader;
+package me.theentropyshard.crloader.patch;
 
-import java.lang.instrument.Instrumentation;
+import javassist.ClassPool;
 
-public class CRLoader {
-    public static String VERSION = "0.0.1";
+public interface Patch {
+    String getTarget();
 
-    public static void premain(String agentArgs, Instrumentation instrumentation) {
-        instrumentation.addTransformer(new MyClassTransformer());
-    }
+    byte[] perform(ClassPool classPool) throws Exception;
 }

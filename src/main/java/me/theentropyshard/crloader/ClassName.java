@@ -18,12 +18,34 @@
 
 package me.theentropyshard.crloader;
 
-import java.lang.instrument.Instrumentation;
+public class ClassName {
+    private static final String JAVA_DELIMITER = ".";
+    private static final String JVM_DELIMITER = "/";
 
-public class CRLoader {
-    public static String VERSION = "0.0.1";
+    private final String javaName;
+    private final String jvmName;
 
-    public static void premain(String agentArgs, Instrumentation instrumentation) {
-        instrumentation.addTransformer(new MyClassTransformer());
+    public ClassName(String... parts) {
+        if (parts.length == 0) {
+            throw new IllegalArgumentException("Class name parts must not be empty!");
+        }
+
+        if (parts.length == 1) {
+            this.javaName = parts[0];
+            this.jvmName = parts[0];
+
+            return;
+        }
+
+        this.javaName = String.join(ClassName.JAVA_DELIMITER, parts);
+        this.jvmName = String.join(ClassName.JVM_DELIMITER, parts);
+    }
+
+    public String getJavaName() {
+        return this.javaName;
+    }
+
+    public String getJvmName() {
+        return this.jvmName;
     }
 }
