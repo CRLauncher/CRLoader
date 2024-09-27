@@ -23,6 +23,9 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
 
+/**
+ * This patch allows to change save location for the game
+ */
 public class SaveLocationPatch implements Patch {
     private static final ClassName SAVE_LOCATION = new ClassName("finalforeach", "cosmicreach", "io", "SaveLocation");
 

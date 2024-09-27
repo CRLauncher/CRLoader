@@ -20,8 +20,23 @@ package me.theentropyshard.crloader.patch;
 
 import javassist.ClassPool;
 
+/**
+ * Patch is responsible for modifying bytecode of a class
+ */
 public interface Patch {
+    /**
+     * Target class of this patch
+     *
+     * @return fully-qualified class name in JVM format
+     */
     String getTarget();
 
+    /**
+     * Performs the patch
+     *
+     * @param classPool class pool
+     * @return modified bytecode
+     * @throws Exception if class could not be modified
+     */
     byte[] perform(ClassPool classPool) throws Exception;
 }

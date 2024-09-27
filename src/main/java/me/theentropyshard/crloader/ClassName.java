@@ -18,6 +18,9 @@
 
 package me.theentropyshard.crloader;
 
+/**
+ * A simple wrapper for class names
+ */
 public class ClassName {
     private static final String JAVA_DELIMITER = ".";
     private static final String JVM_DELIMITER = "/";

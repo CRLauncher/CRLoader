@@ -5,6 +5,9 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
 
+/**
+ * This patch allows to set custom username for offline account
+ */
 public class AccountOfflinePatch implements Patch {
     private static final ClassName ACCOUNT_OFFLINE = new ClassName("finalforeach", "cosmicreach", "accounts", "AccountOffline");
 
