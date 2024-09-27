@@ -21,7 +21,7 @@ package me.theentropyshard.crloader;
 import java.lang.instrument.Instrumentation;
 
 public class CRLoader {
-    public static String VERSION = "0.1.0";
+    public static String VERSION = "0.1.1";
 
     public static void premain(String agentArgs, Instrumentation instrumentation) {
         instrumentation.addTransformer(new MyClassTransformer());
