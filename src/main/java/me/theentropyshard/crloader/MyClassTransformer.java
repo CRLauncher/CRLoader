@@ -21,10 +21,7 @@ package me.theentropyshard.crloader;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import javassist.runtime.Desc;
-import me.theentropyshard.crloader.patch.AccountOfflinePatch;
-import me.theentropyshard.crloader.patch.Lwjgl3LauncherPatch;
-import me.theentropyshard.crloader.patch.Patch;
-import me.theentropyshard.crloader.patch.SaveLocationPatch;
+import me.theentropyshard.crloader.patch.*;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -40,6 +37,10 @@ public class MyClassTransformer implements ClassFileTransformer {
         this.addPatch(new SaveLocationPatch(System.getProperty("crloader.saveDirPath")));
         this.addPatch(new Lwjgl3LauncherPatch(System.getProperty("crloader.windowTitle")));
         this.addPatch(new AccountOfflinePatch(System.getProperty("crloader.offlineUsername")));
+
+        if (Boolean.parseBoolean(System.getProperty("crloader.appendUsername"))) {
+            this.addPatch(new AppendUsernamePatch());
+        }
 
         Desc.useContextClassLoader = true;
     }
