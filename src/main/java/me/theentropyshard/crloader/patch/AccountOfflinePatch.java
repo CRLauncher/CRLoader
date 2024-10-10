@@ -24,7 +24,7 @@ public class AccountOfflinePatch implements Patch {
 
     @Override
     public byte[] perform(ClassPool classPool) throws Exception {
-        if (this.username == null || this.username.trim().isEmpty()) {
+        if (this.username.trim().isEmpty()) {
             return null;
         }
 

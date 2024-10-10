@@ -42,10 +42,6 @@ public class Lwjgl3LauncherPatch implements Patch {
 
     @Override
     public byte[] perform(ClassPool classPool) throws Exception {
-        if (this.windowTitle == null) {
-            return null;
-        }
-
         CtClass ctClass = classPool.get(Lwjgl3LauncherPatch.LWJGL3_LAUNCHER.getJavaName());
         CtMethod method = ctClass.getDeclaredMethod("getDefaultConfiguration");
         method.insertAfter("{ $_.setTitle(\"" + this.windowTitle + "\"); }");

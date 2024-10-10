@@ -27,6 +27,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class MyClassTransformer implements ClassFileTransformer {
     private final Map<String, Patch> patches;
@@ -34,19 +35,32 @@ public class MyClassTransformer implements ClassFileTransformer {
     public MyClassTransformer() {
         this.patches = new HashMap<>();
 
-        this.addPatch(new SaveLocationPatch(System.getProperty("crloader.saveDirPath")));
-        this.addPatch(new Lwjgl3LauncherPatch(System.getProperty("crloader.windowTitle")));
-        this.addPatch(new AccountOfflinePatch(System.getProperty("crloader.offlineUsername")));
-
-        if (Boolean.parseBoolean(System.getProperty("crloader.appendUsername"))) {
-            this.addPatch(new AppendUsernamePatch());
-        }
+        this.addPatchFromProperty("crloader.saveDirPath", SaveLocationPatch::new);
+        this.addPatchFromProperty("crloader.windowTitle", Lwjgl3LauncherPatch::new);
+        this.addPatchFromProperty("crloader.offlineUsername", AccountOfflinePatch::new);
+        this.addPatchFromProperty("crloader.appendUsername", v -> Boolean.parseBoolean(v) ? new AppendUsernamePatch() : null);
 
         Desc.useContextClassLoader = true;
     }
 
     private void addPatch(Patch patch) {
         this.patches.put(patch.getTarget(), patch);
+    }
+
+    private void addPatchFromProperty(String propertyName, Function<String, Patch> instantiate) {
+        String propertyValue = System.getProperty(propertyName);
+
+        if (propertyValue == null) {
+            return;
+        }
+
+        Patch patch = instantiate.apply(propertyName);
+
+        if (patch == null) {
+            return;
+        }
+
+        this.addPatch(patch);
     }
 
     @Override

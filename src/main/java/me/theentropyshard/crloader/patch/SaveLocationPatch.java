@@ -42,10 +42,6 @@ public class SaveLocationPatch implements Patch {
 
     @Override
     public byte[] perform(ClassPool classPool) throws Exception {
-        if (this.saveDirPath == null) {
-            throw new Exception("System property crloader.saveDirPath must be set!");
-        }
-
         CtClass ctClass = classPool.get(SaveLocationPatch.SAVE_LOCATION.getJavaName());
         CtMethod method = ctClass.getDeclaredMethod("getSaveFolderLocation");
         method.setBody("{ return \"" + this.saveDirPath + "\"; }");
