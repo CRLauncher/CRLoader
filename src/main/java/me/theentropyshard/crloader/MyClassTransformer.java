@@ -54,7 +54,7 @@ public class MyClassTransformer implements ClassFileTransformer {
             return;
         }
 
-        Patch patch = instantiate.apply(propertyName);
+        Patch patch = instantiate.apply(propertyValue);
 
         if (patch == null) {
             return;
