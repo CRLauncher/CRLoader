@@ -21,13 +21,13 @@ package me.theentropyshard.crloader;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import javassist.runtime.Desc;
+import me.theentropyshard.crloader.logging.Log;
 import me.theentropyshard.crloader.patch.*;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class MyClassTransformer implements ClassFileTransformer {
     private final Map<String, Patch> patches;
@@ -35,10 +35,12 @@ public class MyClassTransformer implements ClassFileTransformer {
     public MyClassTransformer() {
         this.patches = new HashMap<>();
 
-        this.addPatchFromProperty("crloader.saveDirPath", SaveLocationPatch::new);
-        this.addPatchFromProperty("crloader.windowTitle", Lwjgl3LauncherPatch::new);
-        this.addPatchFromProperty("crloader.offlineUsername", AccountOfflinePatch::new);
-        this.addPatchFromProperty("crloader.appendUsername", v -> Boolean.parseBoolean(v) ? new AppendUsernamePatch() : null);
+        this.addPatch(new SaveLocationPatch());
+        this.addPatch(new Lwjgl3LauncherPatch());
+        this.addPatch(new AccountOfflinePatch());
+        this.addPatch(new AppendUsernamePatch());
+
+        this.printPatches();
 
         Desc.useContextClassLoader = true;
     }
@@ -47,20 +49,10 @@ public class MyClassTransformer implements ClassFileTransformer {
         this.patches.put(patch.getTarget(), patch);
     }
 
-    private void addPatchFromProperty(String propertyName, Function<String, Patch> instantiate) {
-        String propertyValue = System.getProperty(propertyName);
-
-        if (propertyValue == null) {
-            return;
+    private void printPatches() {
+        for (Patch patch : this.patches.values()) {
+            Log.log(patch.getName() + ": " + (patch.isActive() ? "Enabled" : "Disabled"));
         }
-
-        Patch patch = instantiate.apply(propertyValue);
-
-        if (patch == null) {
-            return;
-        }
-
-        this.addPatch(patch);
     }
 
     @Override
@@ -70,8 +62,10 @@ public class MyClassTransformer implements ClassFileTransformer {
             ClassPool classPool = ClassPool.getDefault();
             classPool.appendClassPath(new LoaderClassPath(classLoader));
 
-            if (this.patches.containsKey(className)) {
-                byte[] bytes = this.patches.get(className).perform(classPool);
+            Patch patch = this.patches.get(className);
+
+            if (patch != null && patch.isActive()) {
+                byte[] bytes = patch.perform(classPool);
 
                 if (bytes == null) {
                     return bytecode;

@@ -19,24 +19,31 @@
 package me.theentropyshard.crloader.patch;
 
 import javassist.ClassPool;
+import javassist.CtClass;
+import me.theentropyshard.crloader.ClassName;
 
-/**
- * Patch is responsible for modifying bytecode of a class
- */
-public interface Patch {
-    /**
-     * Target class of this patch
-     *
-     * @return fully-qualified class name in JVM format
-     */
-    String getTarget();
+public abstract class Patch {
+    private final String name;
+    private final ClassName className;
 
-    /**
-     * Performs the patch
-     *
-     * @param classPool class pool
-     * @return modified bytecode
-     * @throws Exception if class could not be modified
-     */
-    byte[] perform(ClassPool classPool) throws Exception;
+    public Patch(String name, ClassName className) {
+        this.name = name;
+        this.className = className;
+    }
+
+    public abstract boolean isActive();
+
+    public byte[] perform(ClassPool classPool) throws Exception {
+        return this.perform(classPool.get(this.className.getJavaName()));
+    }
+
+    public abstract byte[] perform(CtClass clazz) throws Exception;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getTarget() {
+        return this.className.getJvmName();
+    }
 }

@@ -18,23 +18,24 @@
 
 package me.theentropyshard.crloader.patch;
 
-import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
 
-public class AppendUsernamePatch implements Patch {
-    private static final ClassName CHAT_SENDER = new ClassName("finalforeach", "cosmicreach", "networking",
-        "client", "ChatSender");
+public class AppendUsernamePatch extends Patch {
+    private static final ClassName CHAT_SENDER = new ClassName("finalforeach", "cosmicreach", "networking", "client", "ChatSender");
 
-    @Override
-    public String getTarget() {
-        return AppendUsernamePatch.CHAT_SENDER.getJvmName();
+    public AppendUsernamePatch() {
+        super("Append Username Patch", AppendUsernamePatch.CHAT_SENDER);
     }
 
     @Override
-    public byte[] perform(ClassPool classPool) throws Exception {
-        CtClass ctClass = classPool.get(AppendUsernamePatch.CHAT_SENDER.getJavaName());
+    public boolean isActive() {
+        return Boolean.getBoolean("crloader.appendUsername");
+    }
+
+    @Override
+    public byte[] perform(CtClass ctClass) throws Exception {
         CtMethod method = ctClass.getDeclaredMethod("sendMessageOrCommand");
         method.insertBefore("{ if ($5 != null && $5.length() != 0 && $5.charAt(0) != '/' " +
             " && $4 != null" +

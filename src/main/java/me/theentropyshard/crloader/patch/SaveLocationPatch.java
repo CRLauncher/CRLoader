@@ -18,7 +18,6 @@
 
 package me.theentropyshard.crloader.patch;
 
-import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
@@ -26,23 +25,25 @@ import me.theentropyshard.crloader.ClassName;
 /**
  * This patch allows to change save location for the game
  */
-public class SaveLocationPatch implements Patch {
+public class SaveLocationPatch extends Patch {
     private static final ClassName SAVE_LOCATION = new ClassName("finalforeach", "cosmicreach", "io", "SaveLocation");
+    private static final String SAVE_DIR_PATH = "crloader.saveDirPath";
 
     private final String saveDirPath;
 
-    public SaveLocationPatch(String saveDirPath) {
-        this.saveDirPath = saveDirPath;
+    public SaveLocationPatch() {
+        super("Save Location Patch", SaveLocationPatch.SAVE_LOCATION);
+
+        this.saveDirPath = System.getProperty(SaveLocationPatch.SAVE_DIR_PATH);
     }
 
     @Override
-    public String getTarget() {
-        return SAVE_LOCATION.getJvmName();
+    public boolean isActive() {
+        return this.saveDirPath != null && !this.saveDirPath.trim().isEmpty();
     }
 
     @Override
-    public byte[] perform(ClassPool classPool) throws Exception {
-        CtClass ctClass = classPool.get(SaveLocationPatch.SAVE_LOCATION.getJavaName());
+    public byte[] perform(CtClass ctClass) throws Exception {
         CtMethod method = ctClass.getDeclaredMethod("getSaveFolderLocation");
         method.setBody("{ return \"" + this.saveDirPath + "\"; }");
 

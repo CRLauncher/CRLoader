@@ -16,18 +16,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.theentropyshard.crloader;
+package me.theentropyshard.crloader.logging;
 
-import me.theentropyshard.crloader.logging.Log;
-
-import java.lang.instrument.Instrumentation;
-
-public class CRLoader {
-    public static String VERSION = "0.1.2";
-
-    public static void premain(String agentArgs, Instrumentation instrumentation) {
-        Log.log("Version: " + CRLoader.VERSION);
-
-        instrumentation.addTransformer(new MyClassTransformer());
+/**
+ * A very cool logger
+ */
+public class Log {
+    public static void log(String message) {
+        System.out.println("[CRLoader] " + message);
     }
 }
