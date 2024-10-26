@@ -21,6 +21,7 @@ package me.theentropyshard.crloader.patch;
 import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
+import me.theentropyshard.crloader.logging.Log;
 
 /**
  * This patch allows to set custom username for offline account
@@ -38,13 +39,22 @@ public class AccountOfflinePatch extends Patch {
 
     @Override
     public boolean isActive() {
-        return this.username != null && !this.username.trim().isEmpty();
+        return Boolean.getBoolean("crloader.patchOfflineAccount");
     }
 
     @Override
     public byte[] perform(CtClass ctClass) throws Exception {
+        String username = this.username;
+
+        if (username == null) {
+            Log.log("[WARN: " + this.getName() +
+                " is enabled, but username was not passed via crloader.offlineUsername. Defaulting to Player");
+
+            username = "Player";
+        }
+
         CtMethod method = ctClass.getDeclaredMethod("getDisplayName");
-        method.setBody("{ return \"" + this.username + "\"; }");
+        method.setBody("{ return \"" + username + "\"; }");
 
         byte[] bytecode = ctClass.toBytecode();
 

@@ -21,12 +21,17 @@ package me.theentropyshard.crloader.patch;
 import javassist.CtClass;
 import javassist.CtMethod;
 import me.theentropyshard.crloader.ClassName;
+import me.theentropyshard.crloader.logging.Log;
 
 public class AppendUsernamePatch extends Patch {
     private static final ClassName CHAT_SENDER = new ClassName("finalforeach", "cosmicreach", "networking", "client", "ChatSender");
 
+    private final String username;
+
     public AppendUsernamePatch() {
         super("Append Username Patch", AppendUsernamePatch.CHAT_SENDER);
+
+        this.username = System.getProperty("crloader.offlineUsername");
     }
 
     @Override
@@ -36,11 +41,20 @@ public class AppendUsernamePatch extends Patch {
 
     @Override
     public byte[] perform(CtClass ctClass) throws Exception {
+        String username = this.username;
+
+        if (username == null) {
+            Log.log("[WARN: " + this.getName() +
+                " is enabled, but username was not passed via crloader.offlineUsername. Defaulting to Player");
+
+            username = "Player";
+        }
+
         CtMethod method = ctClass.getDeclaredMethod("sendMessageOrCommand");
         method.insertBefore("{ if ($5 != null && $5.length() != 0 && $5.charAt(0) != '/' " +
             " && $4 != null" +
             ") { " +
-            " $5 = \"[\" + $4.getDisplayName() + \"]\" + \" \" + $5;" +
+            " $5 = \"[\" + \"" + username + "\" + \"]\" + \" \" + $5;" +
             " } }");
 
         byte[] bytecode = ctClass.toBytecode();
