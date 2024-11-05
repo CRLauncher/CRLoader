@@ -25,13 +25,13 @@ import me.theentropyshard.crloader.ClassName;
 /**
  * This patch allows to set custom title for game window
  */
-public class Lwjgl3LauncherPatch extends Patch {
+public class WindowTitlePatch extends Patch {
     private static final ClassName LWJGL3_LAUNCHER = new ClassName("finalforeach", "cosmicreach", "lwjgl3", "Lwjgl3Launcher");
 
     private final String windowTitle;
 
-    public Lwjgl3LauncherPatch() {
-        super("Custom Title Patch", Lwjgl3LauncherPatch.LWJGL3_LAUNCHER);
+    public WindowTitlePatch() {
+        super("Custom Title Patch", WindowTitlePatch.LWJGL3_LAUNCHER);
 
         this.windowTitle = System.getProperty("crloader.windowTitle");
     }

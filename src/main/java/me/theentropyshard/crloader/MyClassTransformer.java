@@ -26,32 +26,49 @@ import me.theentropyshard.crloader.patch.*;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MyClassTransformer implements ClassFileTransformer {
-    private final Map<String, Patch> patches;
+    private final Map<String, List<Patch>> patches;
 
     public MyClassTransformer() {
         this.patches = new HashMap<>();
 
-        this.addPatch(new SaveLocationPatch());
-        this.addPatch(new Lwjgl3LauncherPatch());
-        this.addPatch(new AccountOfflinePatch());
-        this.addPatch(new AppendUsernamePatch());
+        this.addPatches(
+            new SaveLocationPatch(),
+            new WindowTitlePatch(),
+            new AccountOfflinePatch(),
+            new AppendUsernamePatch(),
+            new WindowSizePatch()
+        );
 
         this.printPatches();
 
         Desc.useContextClassLoader = true;
     }
 
-    private void addPatch(Patch patch) {
-        this.patches.put(patch.getTarget(), patch);
+    private void addPatches(Patch... patches) {
+        for (Patch patch : patches) {
+            List<Patch> patchList = this.patches.get(patch.getTarget());
+
+            if (patchList == null) {
+                List<Patch> newPatchList = new ArrayList<>();
+                newPatchList.add(patch);
+                this.patches.put(patch.getTarget(), newPatchList);
+            } else {
+                patchList.add(patch);
+            }
+        }
     }
 
     private void printPatches() {
-        for (Patch patch : this.patches.values()) {
-            Log.log(patch.getName() + ": " + (patch.isActive() ? "Enabled" : "Disabled"));
+        for (List<Patch> patches : this.patches.values()) {
+            for (Patch patch : patches) {
+                Log.log(patch.getName() + ": " + (patch.isActive() ? "Enabled" : "Disabled"));
+            }
         }
     }
 
@@ -62,15 +79,21 @@ public class MyClassTransformer implements ClassFileTransformer {
             ClassPool classPool = ClassPool.getDefault();
             classPool.appendClassPath(new LoaderClassPath(classLoader));
 
-            Patch patch = this.patches.get(className);
+            List<Patch> patches = this.patches.get(className);
 
-            if (patch != null && patch.isActive()) {
-                byte[] bytes = patch.perform(classPool);
+            if (patches == null) {
+                return bytecode;
+            }
 
-                if (bytes == null) {
-                    return bytecode;
-                } else {
-                    return bytes;
+            for (Patch patch : patches) {
+                if (patch != null && patch.isActive()) {
+                    byte[] bytes = patch.perform(classPool);
+
+                    if (bytes == null) {
+                        return bytecode;
+                    } else {
+                        return bytes;
+                    }
                 }
             }
         } catch (Exception e) {
