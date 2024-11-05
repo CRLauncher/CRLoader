@@ -23,7 +23,7 @@ import me.theentropyshard.crloader.logging.Log;
 import java.lang.instrument.Instrumentation;
 
 public class CRLoader {
-    public static String VERSION = "0.1.4";
+    public static String VERSION = "0.1.5";
 
     public static void premain(String agentArgs, Instrumentation instrumentation) {
         Log.log("Version: " + CRLoader.VERSION);

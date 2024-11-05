@@ -22,7 +22,7 @@ java -Dcrloader.saveDirPath=<Desired location of Cosmic Reach files> -javaagent:
 
 Example:
 ```shell
-java -Dcrloader.saveDirPath=C:\Users\User\Documents\CosmicReach -javaagent:CRLoader-0.1.4.jar "Cosmic Reach-0.1.47.jar"
+java -Dcrloader.saveDirPath=C:\Users\User\Documents\CosmicReach -javaagent:CRLoader-0.1.5.jar "Cosmic Reach-0.1.57.jar"
 ```
 
 You can also set initial window title with `crloader.windowTitle` system property.
