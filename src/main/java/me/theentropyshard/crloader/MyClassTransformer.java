@@ -42,7 +42,8 @@ public class MyClassTransformer implements ClassFileTransformer {
             new WindowTitlePatch(),
             new AccountOfflinePatch(),
             new AppendUsernamePatch(),
-            new WindowSizePatch()
+            new WindowSizePatch(),
+            new JoinServerPatch()
         );
 
         this.printPatches();
