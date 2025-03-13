@@ -22,12 +22,12 @@ import javassist.*;
 import me.theentropyshard.crloader.ClassName;
 
 public class JoinServerPatch extends Patch {
-    private static final ClassName MAIN_MENU = new ClassName("finalforeach", "cosmicreach", "ClientSingletons");
+    private static final ClassName CLIENT_SINGLETONS = new ClassName("finalforeach", "cosmicreach", "ClientSingletons");
 
     private final String serverAddress;
 
     public JoinServerPatch() {
-        super("Join Server Patch", JoinServerPatch.MAIN_MENU);
+        super("Join Server Patch", JoinServerPatch.CLIENT_SINGLETONS);
 
         this.serverAddress= System.getProperty("crloader.joinServerAddress");
     }
