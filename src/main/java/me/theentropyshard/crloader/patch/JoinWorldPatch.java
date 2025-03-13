@@ -42,6 +42,9 @@ public class JoinWorldPatch extends Patch {
     public byte[] perform(CtClass clazz) throws Exception {
         CtMethod method = clazz.getDeclaredMethod("create");
 
+        method.insertAfter("{ finalforeach.cosmicreach.rendering.GameTexture.load(\"base:textures/entities/sun.png\"); }");
+        method.insertAfter("{ finalforeach.cosmicreach.rendering.GameTexture.load(\"base:textures/entities/moon.png\"); }");
+
         method.insertAfter("{ finalforeach.cosmicreach.gamestates.GameState.switchToGameState(new finalforeach.cosmicreach.gamestates.LoadingGame()); }");
         method.insertAfter("{ finalforeach.cosmicreach.gamestates.GameState.IN_GAME.loadWorld(\"" + this.worldName + "\"); }");
 
