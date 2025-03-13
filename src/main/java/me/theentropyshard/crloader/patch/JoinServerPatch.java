@@ -29,11 +29,11 @@ public class JoinServerPatch extends Patch {
     public JoinServerPatch() {
         super("Join Server Patch", JoinServerPatch.CLIENT_SINGLETONS);
 
-        this.serverAddress= System.getProperty("crloader.joinServerAddress");
+        this.serverAddress = System.getProperty("crloader.joinServerAddress");
     }
     @Override
     public boolean isActive() {
-        return this.serverAddress!= null && !this.serverAddress.trim().isEmpty();
+        return this.serverAddress != null && !this.serverAddress.trim().isEmpty();
     }
 
     @Override
